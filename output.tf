@@ -16,7 +16,7 @@ output "instances_self_link" {
 # GFE Public IP Address
 output "gfe.public_ip" {
   value = "${element(concat(google_compute_forwarding_rule.master-forwarding-rule-http.*.ip_address,
-                            google_compute_forwarding_rule.pubagt-forwarding-rule-http.*.ip_address,
+                            google_compute_forwarding_rule.public-agent-forwarding-rule-http.*.ip_address,
                             list("")), 0)}"
 }
 

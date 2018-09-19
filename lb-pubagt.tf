@@ -1,5 +1,5 @@
-resource "google_compute_forwarding_rule" "pubagt-forwarding-rule-http" {
-  count                 = "${var.dcos_role == "pubagt" ? 1 : 0 }"
+resource "google_compute_forwarding_rule" "public-agent-forwarding-rule-http" {
+  count                 = "${var.dcos_role == "public-agent" ? 1 : 0 }"
   name                  = "${var.name_prefix}-${var.dcos_role}-ext-lb-rule-http"
   load_balancing_scheme = "EXTERNAL"
   target                = "${google_compute_target_pool.node-pool.self_link}"
@@ -8,8 +8,8 @@ resource "google_compute_forwarding_rule" "pubagt-forwarding-rule-http" {
   depends_on            = ["google_compute_http_health_check.public-agent-haproxy-healthcheck"]
 }
 
-resource "google_compute_forwarding_rule" "pubagt-forwarding-rule-https" {
-  count                 = "${var.dcos_role == "pubagt" ? 1 : 0 }"
+resource "google_compute_forwarding_rule" "public-agent-forwarding-rule-https" {
+  count                 = "${var.dcos_role == "public-agent" ? 1 : 0 }"
   name                  = "${var.name_prefix}-${var.dcos_role}-ext-lb-rule-https"
   load_balancing_scheme = "EXTERNAL"
   target                = "${google_compute_target_pool.node-pool.self_link}"
@@ -21,7 +21,7 @@ resource "google_compute_forwarding_rule" "pubagt-forwarding-rule-https" {
 # Used for the external load balancer.
 # The external load balancer only supports google_compute_http_health_check resource.
 resource "google_compute_http_health_check" "public-agent-haproxy-healthcheck" {
-  count        = "${var.dcos_role == "pubagt" ? 1 : 0 }"
+  count        = "${var.dcos_role == "public-agent" ? 1 : 0 }"
   name         = "${var.name_prefix}-ext-http-${var.dcos_role}-haproxy-chk"
   request_path = "/_haproxy_health_check"
   port         = "9090"
@@ -34,7 +34,7 @@ resource "google_compute_http_health_check" "public-agent-haproxy-healthcheck" {
 
 # Target Pool for external load balancing access
 resource "google_compute_target_pool" "node-pool" {
-  count = "${var.dcos_role == "pubagt" ? 1 : 0 }"
+  count = "${var.dcos_role == "public-agent" ? 1 : 0 }"
   name  = "${var.name_prefix}-${var.dcos_role}-pool"
 
   instances = ["${var.instances_self_link}"]
