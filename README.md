@@ -1,38 +1,43 @@
-# DC/OS GCP Front End Load Balancer Fowarding Rules
+GCP Forwarding Rule
+============
+This module creates an GCP forwarding rule. By default it creats two rules for port 80 and port 443. These could be overwritten by setting `rules`. With `additional_rules` you can specify rules that get applied in additon to 80 and 443
 
-# Usage
+EXAMPLE
+-------
 
 ```hcl
-module "pubagt-frontend-compute-firewall" {
-  source  = "dcos-terraform/compute_forwarding_rule/gcp"
-  version = "~> 0.0"
+module "dcos-forwarding-rule" {
+  source  = "terraform-dcos/compute-forwarding-rule/gcp"
+  version = "~> 0.1"
 
-  providers = {
-    google = "google"
-  }
+  name_prefix = "production"
 
-  name_prefix         = "${var.name_prefix}"
-  network             = "${data.google_compute_subnetwork.a.network}"
-  instances_self_link = "${module.dcos-pubagt-instances.instances_self_link}"
-  dcos_role           = "public-agent"
+  instances_self_link = ["us-central1-a/myinstance1","us-central1-b/myinstance2"]
+  additional_rules = [
+                      {
+                         port_range            = "8080"
+                         load_balancing_scheme = "EXTERNAL"
+                         ip_protocol           = "TCP"
+                      },
+                     ]
 }
 ```
+
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| dcos_role | DCOS Role | string | - | yes |
-| instances_self_link | Instances Self Link | list | - | yes |
+| additional_rules | Additional list of rules. These Rules are an additon to the default rules. | string | `<list>` | no |
+| health_check | Health check. Setting partial keys is allowed. E.g. only setting `port` or `request_path` | string | `<map>` | no |
+| instances_self_link | List of master instances self links | list | `<list>` | no |
+| name_format | printf style format for naming the ELB. Gets truncated to 32 characters. (input cluster_name) | string | `%s-load-balancer` | no |
 | name_prefix | Cluster Name | string | - | yes |
-| network | Network Name | string | - | yes |
+| rules | List of rules. By default HTTP and HTTPS are set. If set it overrides the default rules. | list | `<list>` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| dcos_role | DCOS Role |
-| gfe.public_ip | GFE Public IP Address |
-| instances_self_link | Instances Self Link |
-| name_prefix | Cluster Name |
-| network | Network Name |
+| ip_address | IP Address of master load balancer |
+
