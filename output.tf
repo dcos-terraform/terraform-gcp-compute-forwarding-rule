@@ -20,6 +20,13 @@ output "gfe.public_ip" {
                             list("")), 0)}"
 }
 
+# target pool
+output "target_pool" {
+  value = "${element(concat(google_compute_target_pool.master-pool.*.self_link,
+                            google_compute_target_pool.node-pool.*.self_link,
+                            list("")), 0)}"
+}
+
 # DCOS Role
 output "dcos_role" {
   value = "${var.dcos_role}"
