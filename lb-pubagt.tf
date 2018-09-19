@@ -31,3 +31,15 @@ resource "google_compute_http_health_check" "public-agent-haproxy-healthcheck" {
   unhealthy_threshold = 2
   healthy_threshold   = 2
 }
+
+# Target Pool for external load balancing access
+resource "google_compute_target_pool" "node-pool" {
+  count = "${var.dcos_role == "pubagt" ? 1 : 0 }"
+  name  = "${var.name_prefix}-${var.dcos_role}-pool"
+
+  instances = ["${var.instances_self_link}"]
+
+  health_checks = [
+    "${google_compute_http_health_check.public-agent-haproxy-healthcheck.name}",
+  ]
+}
