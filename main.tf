@@ -77,7 +77,7 @@ resource "google_compute_target_pool" "forwarding_rule_pool" {
 
 # Used for the external load balancer. The external load balancer only supports google_compute_http_health_check resource.
 resource "google_compute_http_health_check" "node-adminrouter-healthcheck" {
-  name                = "${local.forwarding_rule_name}-healthcheck"
+  name                = "${local.forwarding_rule_name}-check"
   check_interval_sec  = "${lookup(var.health_check, "check_interval_sec", 30)}"
   timeout_sec         = "${lookup(var.health_check, "timeout_sec", 5)}"
   healthy_threshold   = "${lookup(var.health_check, "healthy_threshold", 2)}"
