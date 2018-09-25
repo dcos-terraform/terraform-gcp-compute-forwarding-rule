@@ -8,7 +8,7 @@ variable "name_format" {
 }
 
 variable "instances_self_link" {
-  description = "List of master instances self links"
+  description = "List of instance self links"
   type        = "list"
   default     = []
 }
@@ -20,12 +20,12 @@ variable "rules" {
 }
 
 variable "additional_rules" {
-  description = "Additional list of rules. These Rules are an additon to the default rules."
+  description = "List of additional rules"
   default     = []
 }
 
 variable "health_check" {
-  description = "Health check. Setting partial keys is allowed. E.g. only setting `port` or `request_path`"
+  description = "Health check definition"
 
   default = {
     check_interval_sec  = 30
