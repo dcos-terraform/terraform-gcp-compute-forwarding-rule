@@ -25,7 +25,7 @@ variable "additional_rules" {
 }
 
 variable "health_check" {
-  description = "Health check definition"
+  description = "Health check definition. Setting partial keys is allowed. E.g. only setting `port` or `request_path`"
 
   default = {
     check_interval_sec  = 30
