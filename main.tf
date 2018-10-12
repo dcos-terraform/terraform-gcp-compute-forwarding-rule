@@ -11,7 +11,7 @@
  *   source  = "terraform-dcos/compute-forwarding-rule/gcp"
  *   version = "~> 0.1"
  *
- *   name_prefix = "production"
+ *   cluster_name = "production"
  *
  *   instances_self_link = ["us-central1-a/myinstance1","us-central1-b/myinstance2"]
  *   additional_rules = [
@@ -28,7 +28,7 @@
 provider "google" {}
 
 locals {
-  forwarding_rule_name = "${format(var.name_format,var.name_prefix)}"
+  forwarding_rule_name = "${format(var.name_format,var.cluster_name)}"
 
   default_rules = [
     {
