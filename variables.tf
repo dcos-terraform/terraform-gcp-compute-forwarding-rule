@@ -36,3 +36,9 @@ variable "health_check" {
     request_path        = "/"
   }
 }
+
+variable "labels" {
+  description = "Add custom labels to all resources"
+  type        = "map"
+  default     = {}
+}
