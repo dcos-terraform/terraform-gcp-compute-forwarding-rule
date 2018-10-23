@@ -29,7 +29,7 @@ module "dcos-forwarding-rule" {
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | additional_rules | List of additional rules | string | `<list>` | no |
-| cluster_name | Cluster Name | string | - | yes |
+| cluster_name | Name of the DC/OS cluster | string | - | yes |
 | health_check | Health check definition. Setting partial keys is allowed. E.g. only setting `port` or `request_path` | string | `<map>` | no |
 | instances_self_link | List of instance self links | list | `<list>` | no |
 | labels | Add custom labels to all resources | map | `<map>` | no |
