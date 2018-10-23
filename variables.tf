@@ -1,5 +1,5 @@
 variable "cluster_name" {
-  description = "Cluster Name"
+  description = "Name of the DC/OS cluster"
 }
 
 variable "name_format" {
