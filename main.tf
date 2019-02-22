@@ -62,9 +62,6 @@ resource "google_compute_forwarding_rule" "forwarding_rule_config" {
   target     = "${google_compute_target_pool.forwarding_rule_pool.self_link}"
   ip_address = "${google_compute_address.forwarding_rule_address.address}"
   depends_on = ["google_compute_http_health_check.node-adminrouter-healthcheck"]
-
-  labels = "${merge(var.labels, map("name", format(var.name_format,var.cluster_name),
-                                "cluster", var.cluster_name))}"
 }
 
 # Target Pool for external load balancing access
