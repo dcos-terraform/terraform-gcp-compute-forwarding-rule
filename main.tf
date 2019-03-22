@@ -25,7 +25,7 @@
  *```
  */
 
-provider "google" {}
+provider "google-beta" {}
 
 locals {
   forwarding_rule_name = "${format(var.name_format,var.cluster_name)}"
@@ -49,6 +49,8 @@ locals {
 # Reserving the Public IP Address of the External Load Balancer for the node
 resource "google_compute_address" "forwarding_rule_address" {
   name = "${local.forwarding_rule_name}"
+
+  provider = "google-beta"
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
@@ -65,6 +67,8 @@ resource "google_compute_forwarding_rule" "forwarding_rule_config" {
 
   labels = "${merge(var.labels, map("name", format(var.name_format,var.cluster_name),
                                 "cluster", var.cluster_name))}"
+
+  provider = "google-beta"
 }
 
 # Target Pool for external load balancing access
@@ -76,6 +80,8 @@ resource "google_compute_target_pool" "forwarding_rule_pool" {
   health_checks = [
     "${google_compute_http_health_check.node-adminrouter-healthcheck.name}",
   ]
+
+  provider = "google-beta"
 }
 
 # Used for the external load balancer. The external load balancer only supports google_compute_http_health_check resource.
@@ -87,4 +93,6 @@ resource "google_compute_http_health_check" "node-adminrouter-healthcheck" {
   unhealthy_threshold = "${lookup(var.health_check, "unhealthy_threshold", 2)}"
   port                = "${lookup(var.health_check, "port", "80")}"
   request_path        = "${lookup(var.health_check, "request_path", "/")}"
+
+  provider = "google-beta"
 }
