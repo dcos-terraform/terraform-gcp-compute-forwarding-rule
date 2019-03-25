@@ -9,7 +9,7 @@
  *```hcl
  * module "dcos-forwarding-rule" {
  *   source  = "terraform-dcos/compute-forwarding-rule/gcp"
- *   version = "~> 0.1"
+ *   version = "~> 0.1.0"
  *
  *   cluster_name = "production"
  *
