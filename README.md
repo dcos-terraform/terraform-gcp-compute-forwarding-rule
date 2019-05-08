@@ -29,7 +29,7 @@ module "dcos-forwarding-rule" {
 |------|-------------|:----:|:-----:|:-----:|
 | cluster\_name | Name of the DC/OS cluster | string | n/a | yes |
 | additional\_rules | List of additional rules | list | `<list>` | no |
-| health\_check | Health check definition. Setting partial keys is allowed. E.g. only setting `port` or `request_path` | map | `<map>` | no |
+| health\_check | Health check definition. | map | `<map>` | no |
 | instances\_self\_link | List of instance self links | list | `<list>` | no |
 | labels | Add custom labels to all resources | map | `<map>` | no |
 | name\_format | printf style format for naming the ELB. Gets truncated to 32 characters. (input cluster_name) | string | `"%s-load-balancer"` | no |
