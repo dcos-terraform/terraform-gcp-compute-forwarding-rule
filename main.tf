@@ -9,7 +9,7 @@
  *```hcl
  * module "dcos-forwarding-rule" {
  *   source  = "terraform-dcos/compute-forwarding-rule/gcp"
- *   version = "~> 0.1.0"
+ *   version = "~> 0.2.0"
  *
  *   cluster_name = "production"
  *
@@ -25,7 +25,9 @@
  *```
  */
 
-provider "google" {}
+provider "google" {
+  version = "~> 2.0"
+}
 
 locals {
   forwarding_rule_name = "${format(var.name_format,var.cluster_name)}"
