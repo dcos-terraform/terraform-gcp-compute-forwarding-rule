@@ -25,7 +25,9 @@
  *```
  */
 
-provider "google" {}
+provider "google" {
+  version = "~> 1.0"
+}
 
 locals {
   forwarding_rule_name = "${format(var.name_format,var.cluster_name)}"
