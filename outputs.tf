@@ -1,4 +1,4 @@
 output "ip_address" {
   description = "Load balancer ip address"
-  value       = "${element(google_compute_address.forwarding_rule_address.*.address, 0)}"
+  value       = "${length(google_compute_address.forwarding_rule_address.*.address) == 1 ? join("", google_compute_address.forwarding_rule_address.*.address) : element(google_compute_address.forwarding_rule_address.*.address, 0)}"
 }
