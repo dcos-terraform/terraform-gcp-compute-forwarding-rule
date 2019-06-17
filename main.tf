@@ -62,7 +62,7 @@ resource "google_compute_forwarding_rule" "forwarding_rule_config" {
   port_range            = "${lookup(local.concat_rules[count.index], "port_range")}"
 
   target     = "${google_compute_target_pool.forwarding_rule_pool.self_link}"
-  ip_address = "${length(google_compute_address.forwarding_rule_address.*.address) == 1 ? join("", google_compute_address.forwarding_rule_address.*.address) : element(google_compute_address.forwarding_rule_address.*.address, 0)}"
+  ip_address = "${join("", google_compute_address.forwarding_rule_address.*.address)}"
   depends_on = ["google_compute_http_health_check.node-adminrouter-healthcheck"]
 }
 
