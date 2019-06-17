@@ -49,7 +49,8 @@ locals {
 
 # Reserving the Public IP Address of the External Load Balancer for the node
 resource "google_compute_address" "forwarding_rule_address" {
-  name = "${local.forwarding_rule_name}"
+  count = "${var.disable ? 0 : 1}"
+  name  = "${local.forwarding_rule_name}"
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
