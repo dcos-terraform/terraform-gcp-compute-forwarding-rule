@@ -28,7 +28,8 @@
 provider "google" {}
 
 locals {
-  forwarding_rule_name = "${format(var.name_format,var.cluster_name)}"
+  cluster_name         = "${var.name_prefix != "" ? "${var.name_prefix}-${var.cluster_name}" : var.cluster_name}"
+  forwarding_rule_name = "${format(var.name_format, local.cluster_name)}"
 
   default_rules = [
     {
@@ -52,7 +53,7 @@ resource "google_compute_address" "forwarding_rule_address" {
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
-  count = "${length(local.concat_rules)}"
+  count = "${var.disable ? 0 : "${length(local.concat_rules)}"}"
   name  = "${local.forwarding_rule_name}-${lookup(local.concat_rules[count.index], "port_range")}"
 
   ip_protocol           = "${lookup(local.concat_rules[count.index], "ip_protocol", "TCP")}"
@@ -66,7 +67,8 @@ resource "google_compute_forwarding_rule" "forwarding_rule_config" {
 
 # Target Pool for external load balancing access
 resource "google_compute_target_pool" "forwarding_rule_pool" {
-  name = "${local.forwarding_rule_name}"
+  count = "${var.disable ? 0 : 1}"
+  name  = "${local.forwarding_rule_name}"
 
   instances = ["${var.instances_self_link}"]
 
@@ -77,6 +79,7 @@ resource "google_compute_target_pool" "forwarding_rule_pool" {
 
 # Used for the external load balancer. The external load balancer only supports google_compute_http_health_check resource.
 resource "google_compute_http_health_check" "node-adminrouter-healthcheck" {
+  count               = "${var.disable ? 0 : 1}"
   name                = "${local.forwarding_rule_name}-check"
   check_interval_sec  = "${lookup(var.health_check, "check_interval_sec", 30)}"
   timeout_sec         = "${lookup(var.health_check, "timeout_sec", 5)}"
