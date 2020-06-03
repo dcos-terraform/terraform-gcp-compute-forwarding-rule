@@ -9,14 +9,14 @@ variable "name_format" {
 
 variable "instances_self_link" {
   description = "List of instance self links"
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
 variable "rules" {
   description = "List of rules. By default HTTP and HTTPS are set. If set it overrides the default rules."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "disable" {
@@ -49,6 +49,7 @@ variable "health_check" {
 
 variable "labels" {
   description = "Add custom labels to all resources"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
+
