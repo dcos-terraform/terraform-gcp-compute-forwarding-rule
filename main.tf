@@ -25,11 +25,12 @@
  *```
  */
 
-provider "google" {}
+provider "google" {
+}
 
 locals {
-  cluster_name         = "${var.name_prefix != "" ? "${var.name_prefix}-${var.cluster_name}" : var.cluster_name}"
-  forwarding_rule_name = "${format(var.name_format, local.cluster_name)}"
+  cluster_name         = var.name_prefix != "" ? "${var.name_prefix}-${var.cluster_name}" : var.cluster_name
+  forwarding_rule_name = format(var.name_format, local.cluster_name)
 
   default_rules = [
     {
@@ -44,48 +45,52 @@ locals {
     },
   ]
 
-  concat_rules = ["${coalescelist(var.rules, concat(local.default_rules,var.additional_rules))}"]
+  concat_rules = coalescelist(var.rules, concat(local.default_rules, var.additional_rules))
 }
 
 # Reserving the Public IP Address of the External Load Balancer for the node
 resource "google_compute_address" "forwarding_rule_address" {
-  count = "${var.disable ? 0 : 1}"
-  name  = "${local.forwarding_rule_name}"
+  count = var.disable ? 0 : 1
+  name  = local.forwarding_rule_name
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
-  count = "${var.disable ? 0 : "${length(local.concat_rules)}"}"
-  name  = "${local.forwarding_rule_name}-${lookup(local.concat_rules[count.index], "port_range")}"
+  count = var.disable ? 0 : length(local.concat_rules)
+  name  = "${local.forwarding_rule_name}-${local.concat_rules[count.index]["port_range"]}"
 
-  ip_protocol           = "${lookup(local.concat_rules[count.index], "ip_protocol", "TCP")}"
-  load_balancing_scheme = "${lookup(local.concat_rules[count.index], "load_balancing_scheme", "EXTERNAL")}"
-  port_range            = "${lookup(local.concat_rules[count.index], "port_range")}"
+  ip_protocol = lookup(local.concat_rules[count.index], "ip_protocol", "TCP")
+  load_balancing_scheme = lookup(
+    local.concat_rules[count.index],
+    "load_balancing_scheme",
+    "EXTERNAL",
+  )
+  port_range = local.concat_rules[count.index]["port_range"]
 
-  target     = "${google_compute_target_pool.forwarding_rule_pool.self_link}"
-  ip_address = "${join("", google_compute_address.forwarding_rule_address.*.address)}"
-  depends_on = ["google_compute_http_health_check.node-adminrouter-healthcheck"]
+  target     = google_compute_target_pool.forwarding_rule_pool[0].self_link
+  ip_address = join("", google_compute_address.forwarding_rule_address.*.address)
+  depends_on = [google_compute_http_health_check.node-adminrouter-healthcheck]
 }
 
 # Target Pool for external load balancing access
 resource "google_compute_target_pool" "forwarding_rule_pool" {
-  count = "${var.disable ? 0 : 1}"
-  name  = "${local.forwarding_rule_name}"
+  count = var.disable ? 0 : 1
+  name  = local.forwarding_rule_name
 
-  instances = ["${var.instances_self_link}"]
+  instances = var.instances_self_link
 
   health_checks = [
-    "${google_compute_http_health_check.node-adminrouter-healthcheck.name}",
+    google_compute_http_health_check.node-adminrouter-healthcheck[0].name,
   ]
 }
 
 # Used for the external load balancer. The external load balancer only supports google_compute_http_health_check resource.
 resource "google_compute_http_health_check" "node-adminrouter-healthcheck" {
-  count               = "${var.disable ? 0 : 1}"
+  count               = var.disable ? 0 : 1
   name                = "${local.forwarding_rule_name}-check"
-  check_interval_sec  = "${lookup(var.health_check, "check_interval_sec", 30)}"
-  timeout_sec         = "${lookup(var.health_check, "timeout_sec", 5)}"
-  healthy_threshold   = "${lookup(var.health_check, "healthy_threshold", 2)}"
-  unhealthy_threshold = "${lookup(var.health_check, "unhealthy_threshold", 2)}"
-  port                = "${lookup(var.health_check, "port", "80")}"
-  request_path        = "${lookup(var.health_check, "request_path", "/")}"
+  check_interval_sec  = lookup(var.health_check, "check_interval_sec", 30)
+  timeout_sec         = lookup(var.health_check, "timeout_sec", 5)
+  healthy_threshold   = lookup(var.health_check, "healthy_threshold", 2)
+  unhealthy_threshold = lookup(var.health_check, "unhealthy_threshold", 2)
+  port                = lookup(var.health_check, "port", "80")
+  request_path        = lookup(var.health_check, "request_path", "/")
 }
