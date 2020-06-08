@@ -45,7 +45,7 @@ locals {
     },
   ]
 
-  concat_rules = [coalescelist(var.rules, concat(local.default_rules, var.additional_rules))]
+  concat_rules = coalescelist(var.rules, concat(local.default_rules, var.additional_rules))
 }
 
 # Reserving the Public IP Address of the External Load Balancer for the node
@@ -94,4 +94,3 @@ resource "google_compute_http_health_check" "node-adminrouter-healthcheck" {
   port                = lookup(var.health_check, "port", "80")
   request_path        = lookup(var.health_check, "request_path", "/")
 }
-
