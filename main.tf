@@ -55,16 +55,16 @@ resource "google_compute_address" "forwarding_rule_address" {
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
-  count = var.disable ? 0 : length(local.concat_rules)
-  name  = "${local.forwarding_rule_name}-${local.concat_rules[count.index]["port_range"]}"
+  for_each = { for r in local.concat_rules : r["port_range"] => r }
+  name     = "${local.forwarding_rule_name}-${each.key}"
 
-  ip_protocol = lookup(local.concat_rules[count.index], "ip_protocol", "TCP")
+  ip_protocol = lookup(each.value, "ip_protocol", "TCP")
   load_balancing_scheme = lookup(
-    local.concat_rules[count.index],
+    each.value,
     "load_balancing_scheme",
     "EXTERNAL",
   )
-  port_range = local.concat_rules[count.index]["port_range"]
+  port_range = each.key
 
   target     = google_compute_target_pool.forwarding_rule_pool[0].self_link
   ip_address = join("", google_compute_address.forwarding_rule_address.*.address)
