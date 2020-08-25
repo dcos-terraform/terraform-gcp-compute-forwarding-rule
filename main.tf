@@ -55,7 +55,7 @@ resource "google_compute_address" "forwarding_rule_address" {
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule_config" {
-  for_each = { for r in local.concat_rules : r["port_range"] => r }
+  for_each = { for r in local.concat_rules : r["port_range"] => r if var.disable == false }
   name     = "${local.forwarding_rule_name}-${each.key}"
 
   ip_protocol = lookup(each.value, "ip_protocol", "TCP")
